@@ -16,13 +16,12 @@ app.get('/login', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-    console.log("LOGIN")
+    console.log("USE ONE OF THESE TO LOGIN:")
     console.log(users)
-    const user = users.filter(u => u.email == req.body.email && u.password == req.body.password)
-    if (user.length === 1) {
-        console.log("logged in: " + user[0].name)
-        res.render('index.ejs', {name: user[0].name, email: user[0].email, password: user[0].password})
-    }
+    const filteredUsers = users.filter(user => user.email === req.body.email && user.password === req.body.password)
+    if (filteredUsers.length !== 1) return
+    
+    res.render('index.ejs', {name: filteredUsers[0].name, email: filteredUsers[0].email, password: filteredUsers[0].password})
 })
 
 // register requests
@@ -31,14 +30,15 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-    console.log("REGISTER")
+    const duplicateEmails = users.filter(user => user.email === req.body.email)
+    if (duplicateEmails.length !== 0) return
+
     users.push({
         id: Date.now().toString(),
         name: req.body.name,
         email: req.body.email,
         password: req.body.password
     })
-    console.log(users)
     res.render('index.ejs', {name: req.body.name, email: req.body.email, password: req.body.password})
 })
 
